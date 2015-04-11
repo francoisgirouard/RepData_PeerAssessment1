@@ -5,18 +5,12 @@ output:
     keep_md: true
 ---
 
-```{r, echo = FALSE, message = FALSE, results='hide', warning=FALSE}
-# Load libraries
-library(plyr)
-library(dplyr)
-library(ggplot2)
-library(lubridate)
-library(scales)
-```
+
 
 ## Loading and preprocessing the data
 
-```{r}
+
+```r
 #Unzip the file
 unzip(zipfile = 'activity.zip', overwrite = TRUE)
 
@@ -33,7 +27,8 @@ data <- read.csv('./activity.csv') %>%
 
 ## What is mean total number of steps taken per day?
 
-```{r}
+
+```r
 stepsPerDay <- data %>%
   group_by(date) %>%
   summarize(steps = sum(steps, na.rm = TRUE))
@@ -43,40 +38,50 @@ summaryBeforeImpute <- stepsPerDay %>%
 qplot(x = steps, data = stepsPerDay, geom = 'histogram')
 ```
 
+![plot of chunk unnamed-chunk-3](figure/unnamed-chunk-3-1.png) 
+
 The mean of the total number of steps taken per day is:
-`r format(summaryBeforeImpute$mean)`.  
+9354.23.  
 The median of the total number of steps taken per day is:
-`r format(summaryBeforeImpute$median)`.  
+10395.  
 
 ## What is the average daily activity pattern?
 
-```{r}
+
+```r
 stepsPerInterval <- data %>%
   group_by(interval) %>%
   summarize(steps = mean(steps, na.rm = TRUE))
 qplot(x = interval, y = steps, data = stepsPerInterval, geom = 'line') +
   scale_x_datetime(breaks = '4 hours', labels = date_format('%H:%M'))
+```
+
+![plot of chunk unnamed-chunk-4](figure/unnamed-chunk-4-1.png) 
+
+```r
 stepsPerInterval <- stepsPerInterval %>%
   filter(steps == max(steps)) %>%
   mutate(steps = round(steps, 2))
 ```
 
 The interval with the maximum number of steps is at
-`r format(stepsPerInterval$interval, '%H:%M')` (`r format(stepsPerInterval$steps)` steps on
+08:35 (206.17 steps on
 average).
 
 ## Imputing missing values
 
-```{r}
+
+```r
 incompleteRowCount <- sum(!complete.cases(data))
 ```
 
-The total number of rows with NAs is: `r incompleteRowCount`  
+The total number of rows with NAs is: 2304  
 
 The imputing strategy consists in replacing the NAs with the mean of the number
 of steps taken in the same interval on all days.
 
-```{r}
+
+```r
 incompleteRowCount <- sum(!complete.cases(data))
 impute <- function(x) replace(x, is.na(x), mean(x, na.rm = TRUE))
 newData <- data %>%
@@ -91,19 +96,22 @@ summaryAfterImpute = stepsPerDay %>%
 qplot(x = steps, data = stepsPerDay, geom = 'histogram')
 ```
 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png) 
+
 The new mean of the total number of steps taken per day is: 
-`r format(summaryAfterImpute$mean)`, compared to the previous 
-`r format(summaryBeforeImpute$mean)`, a difference of 
-`r format(abs(summaryAfterImpute$mean - summaryBeforeImpute$mean))`.  
+10766.19, compared to the previous 
+9354.23, a difference of 
+1411.96.  
 The median of the total number of steps taken per day is: 
-`r format(summaryAfterImpute$median)`, compared to the previous 
-`r format(summaryBeforeImpute$median)`, a difference of 
-`r format(abs(summaryAfterImpute$median - summaryBeforeImpute$median))`.  
+10766.19, compared to the previous 
+10395, a difference of 
+371.19.  
 As a result of imputing the missing data, the new mean and median are now equal.
 
 ## Are there differences in activity patterns between weekdays and weekends?
 
-```{r}
+
+```r
 newData <- newData %>%
   mutate(daytype = factor(!(wday(date) %in% 2:6),
                           labels = c('weekday', 'weekend')))
@@ -112,3 +120,5 @@ qplot(x = interval, y = steps, data = newData, geom = 'line', stat = 'summary',
   facet_wrap(~ daytype, ncol = 1) +
   scale_x_datetime(breaks = '4 hours', labels = date_format('%H:%M'))
 ```
+
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png) 
