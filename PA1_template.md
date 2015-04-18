@@ -32,10 +32,12 @@ summaryBeforeImpute <- stepsPerDay %>%
   summarise(mean = round(mean(steps, na.rm = TRUE), 2),
             median = round(median(steps, na.rm = TRUE), 2))
 # Plot the histogram
-qplot(x = steps, data = stepsPerDay, geom = 'histogram')
+qplot(x = steps, data = stepsPerDay, geom = 'histogram', 
+      main = 'Total number of steps taken each day',
+      xlab = 'Steps', ylab = 'Days')
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-3-1.png) 
 
 The mean of the total number of steps taken per day is:
 9354.23.  
@@ -51,11 +53,13 @@ stepsPerInterval <- data %>%
   group_by(interval) %>%
   summarize(steps = mean(steps, na.rm = TRUE))
 # Plot the time series
-qplot(x = interval, y = steps, data = stepsPerInterval, geom = 'line') +
+qplot(x = interval, y = steps, data = stepsPerInterval, geom = 'line',
+      main = 'Average daily activity', xlab = '5-minute interval',
+      ylab = 'Average number of steps') +
   scale_x_datetime(breaks = '4 hours', labels = date_format('%H:%M'))
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-4-1.png) 
 
 ```r
 # Keep only the line corresponding to the maximum mean
@@ -100,10 +104,12 @@ summaryAfterImpute = stepsPerDay %>%
   summarise(mean = round(mean(steps, na.rm = TRUE), 2),
             median = round(median(steps, na.rm = TRUE), 2))
 # Plot the histogram
-qplot(x = steps, data = stepsPerDay, geom = 'histogram')
+qplot(x = steps, data = stepsPerDay, geom = 'histogram', 
+      main = 'Total number of steps taken each day',
+      xlab = 'Steps', ylab = 'Days')
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-6-1.png) 
 
 The new mean of the total number of steps taken per day is: 
 10766.19, compared to the previous 
@@ -125,9 +131,10 @@ newData <- newData %>%
                           labels = c('weekday', 'weekend')))
 # Plot the time series
 qplot(x = interval, y = steps, data = newData, geom = 'line', stat = 'summary',
-      fun.y = 'mean') +
+      fun.y = 'mean', main = 'Average daily activity',
+      xlab = '5-minute interval', ylab = 'Average number of steps') +
   facet_wrap(~ daytype, ncol = 1) +
   scale_x_datetime(breaks = '4 hours', labels = date_format('%H:%M'))
 ```
 
-![](./PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
+![](PA1_template_files/figure-html/unnamed-chunk-7-1.png) 
